@@ -3,14 +3,14 @@ import companies from '../data/companies';
 
 
 export function average(props) {
-    return totalCheck(props) / props.length;
+    return (totalCheck(props) / props.length).toFixed(2);
 }
 
 export function totalCheck(props) {
     let result = props.reduce((sum, current) => {
         return sum + +current.total;
     }, 0);
-    return result;
+    return result.toFixed(2);
 }
 
 export function orderCount(props) {
@@ -30,11 +30,11 @@ export function mediana(props) {
     });
     if (arr.length % 2 == 0) {
         let medianValue = (arr[(arr.length) / 2 - 1] + arr[(arr.length) / 2]) / 2;
-        return medianValue;
+        return medianValue.toFixed(2);
     }
     else {
         let medianValue = arr[(arr.length - 1) / 2];
-        return medianValue;
+        return medianValue.toFixed(2);
     }
 }
 
@@ -66,7 +66,7 @@ export function maleAvgCheck(props) {
             });
         }
     });
-    return totalMaleCheck / maleCounter;
+    return (totalMaleCheck / maleCounter).toFixed(2);
 }
 
 export function femaleAvgCheck(props) {
@@ -82,7 +82,7 @@ export function femaleAvgCheck(props) {
             });
         }
     });
-    return totalFemaleCheck / femaleCounter;
+    return (totalFemaleCheck / femaleCounter).toFixed(2);
 }
 
 export function userInfo(props) {
@@ -109,7 +109,7 @@ function companyIndustry(props) {
         }
     }
     else {
-        return `Nothing found`;
+        return `n/a`;
     }
 }
 
@@ -122,7 +122,7 @@ function companySector(props) {
         }
     }
     else {
-        return `Nothing found`;
+        return `n/a`;
     }
 }
 function companyURL(props) {
@@ -134,10 +134,20 @@ function companyURL(props) {
         }
     }
     else {
-        return `Nothing found`;
+        return `n/a`;
     }
 }
-
+// linkBlock();
+// function linkBlock() {
+//     //document.getElementsByTagName("a")[1].innerText = "1";
+//     let a = document.getElementsByTagName("a")[1];
+//     console.log(a);
+//         // for (let i = 0; i < document.getElementsByTagName("a").length; i++) {
+//         //     if (document.getElementsByTagName("a")[i].innerText === "Nothing found") {
+//         //         console.log(4)
+//         //     }
+//         // }
+// }
 function companyTitle(props) {
     if (props.company_id !== null) {
         for (let i = 0; i < companies.length; i++) {
@@ -147,7 +157,7 @@ function companyTitle(props) {
         }
     }
     else {
-        return `Nothing found`;
+        return ``;
     }
 }
 
@@ -155,16 +165,25 @@ export function userDetails(props) {
     return `<div class="user-details" style="display: none">
         <p>Birthday: ` + dateConvert(props) + `</p>
         <p><img src="${props.avatar}" width="100px"></p>
-        <p>Company: <a href=` + companyURL(props) + ` target="_blank">` + companyTitle(props) + `.</a></p>
+        <p>Company: ` + linkGen(props) + `</p>
         <p>Industry: ` + companyIndustry(props) + ` / ` + companySector(props) + `</p>
     </div>`;
 }
 
+function linkGen(props) {
+    const comp = companyTitle(props);
+    if (comp) {
+        return `<a href=` + companyURL(props) + ` target="_blank">` + companyTitle(props) + `.</a>`
+    }
+    else {
+        return `n/a`;
+    }
+}
 // function dateBirthday(props) {
 //     //for (let i = 0; i < users.length; i++) {
 //         //console.log(props)
 //         if (props.birthday === users[1].birthday) {
-            
+
 //         }
 //     //}
 //     if ( props.birthday !== null) {
@@ -181,12 +200,12 @@ export function userDetails(props) {
 //     else {
 //         return `Nothing found`;
 //     }
-    
+
 // }
 
 export function dateConvert(props) {
     if (props.created_at === undefined) {
-        if ( props.birthday !== null) {
+        if (props.birthday !== null) {
             let date = new Date(+props.birthday);
             let month = `0`;
             if (date.getMonth() < 9) {
@@ -198,7 +217,7 @@ export function dateConvert(props) {
             return `${date.getDate()} / ${month} / ${date.getFullYear()}`
         }
         else {
-            return `Nothing found`;
+            return `n/a`;
         }
     }
     else {
@@ -219,9 +238,9 @@ export function dateConvert(props) {
 function timeConvert(props) {
     let arr = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
     let sec = `0`,
-    min = `0`,
-    hour,
-    AMPM;
+        min = `0`,
+        hour,
+        AMPM;
     if (props.getSeconds() < 10) {
         sec += props.getSeconds();
     }
