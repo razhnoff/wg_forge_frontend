@@ -221,7 +221,6 @@ export function dateConvert(props) {
         }
     }
     else {
-        //console.log(props.created_at)
         let date = new Date(+props.created_at);
         let month = `0`;
         if (date.getMonth() < 9) {
@@ -272,7 +271,7 @@ function timeConvert(props) {
 export function cardConvert(props) {
     let str = "";
     for (let i = 0; i < props.length; i++) {
-        if (i !== 0 && i !== 1 && i !== props.length - 1 && i !== props.length - 2 && i !== props.length - 3 && i !== props.length - 4) {
+        if (i > 1 && i < props.length-4) {
             str += "*";
         }
         else {
