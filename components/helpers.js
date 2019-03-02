@@ -14,6 +14,7 @@ export function totalCheck(props) {
 }
 
 export function orderCount(props) {
+    //console.log(document.getElementsByTagName("tbody")[0].children)
     let result = props.reduce((sum, current, index) => {
         return index + 1;
     }, 0);
