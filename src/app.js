@@ -16,7 +16,7 @@ let selectCurrency = 'USD';
 
 
 let sortedBy = null;
-
+let valueSign;
 fetch(url, {
     method: 'GET'
 })
@@ -31,17 +31,19 @@ fetch(url, {
 
 const headers = ["Transaction ID", "User Info", "Order Date", "Order Amount", "Card Number", "Card Type", "Location"];
 const financeList = ["USD", "RUB", "EUR", "NZD", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "MXN", "CZK", "DKK", "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY", "KRW", "MYR", "NOK", "PHP", "PLN", "RON", "SEK", "SGD", "THB", "TRY", "ZAR"];
+
 const newListOrders = [...orders];
 const newListUsers = [...users];
 
 export default (function () {
+    createSelectTemplate(financeList);
+    createHeadTemplate(headers);
     createTemplate(orders);
     // YOUR CODE GOES HERE
     // next line is for example only
-    function createTemplate(propsOrders, event) {
-
+    function createSelectTemplate(finList) {
         document.getElementById("app").innerHTML =
-            `<table class="table table-dark table-bordered table-hover">
+            (`<table class="table table-dark table-bordered table-hover">
         <thead>
             <tr>
                 <th>Search:</th>
@@ -51,26 +53,56 @@ export default (function () {
                 <th>Convert Money: </th>
                 <th>
                     <select class="form-control form-control-sm" title="Convert money">
-                        `+ converterList(financeList) + `
+                        `+ converterList(finList) + `
                     </select>
                 </th>
             </tr>
-            <tr>
-                ` + createHeaders(headers, event) +
-            `
-            </tr>
-        </thead >`
-            + tbody(propsOrders) +
-            `</table >`;
-        listeners();
+        </thead>
+        </table >`)
+    }
 
+    function createHeadTemplate(tableHeaders, event) {
+
+        const theadRow = document.getElementsByTagName("thead")[0];
+        if (theadRow.children[1]) {
+            theadRow.children[1].remove();
+        }
+        let newTableRow = document.createElement("tr");
+        newTableRow.innerHTML = createHeaders(tableHeaders, event);
+        theadRow.appendChild(newTableRow)
+        // document.getElementById("app").innerHTML =
+        //     (`<table class="table table-dark table-bordered table-hover">
+        // <thead>
+        //     <tr>
+        //         <th>Search:</th>
+        //         <th colspan="2">
+        //             <input type="text" class="form-control" id="search" placeholder="Enter user info, date,location, card type, order amount or transaction id" title="Enter user info, date,location, card type, order amount or transaction id">
+        //         </th>
+        //         <th>Convert Money: </th>
+        //         <th>
+        //             <select class="form-control form-control-sm" title="Convert money">
+        //                 `+ converterList(financeList) + `
+        //             </select>
+        //         </th>
+        //     </tr>
+        //     <tr>
+        //         ` + createHeaders(tableHeaders, event) +
+        //         `
+        //     </tr>
+        // </thead>
+        // </table >`);
     }
 
 
-
-    function tbody(propsOrders) {
-        return (`<tbody>` + table(propsOrders) + statistics(propsOrders) +
-            `</tbody>`);
+    function createTemplate(propsOrders) {
+        const tbody = document.getElementsByTagName("tbody")[0];
+        if (tbody) {
+            tbody.remove();
+        }
+        let newTbody = document.createElement('tbody');
+        newTbody.innerHTML = table(propsOrders) + statistics(propsOrders);
+        document.getElementsByTagName("table")[0].appendChild(newTbody);
+        listeners();
     }
 
     function listeners() {
@@ -78,22 +110,31 @@ export default (function () {
             if (i !== 4) {
                 document.getElementsByTagName("thead")[0].children[1].children[i].addEventListener("click", (eventClick) => {
                     if (eventClick.currentTarget.id === "header_0") {
+                        debugger
                         if (sortedBy != eventClick.currentTarget.id) {
+
                             sortedBy = eventClick.currentTarget.id;
-                            createTemplate(newListOrders.sort(sortTransaction), eventClick);
+                            createHeadTemplate(headers, eventClick);
+                            createTemplate(newListOrders.sort(sortTransaction));
 
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
+                            debugger
+                            createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
                     }
                     if (eventClick.currentTarget.id === "header_1") {
+                        debugger
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
+                            createHeadTemplate(headers, eventClick);
                             createTemplate(sortUser(newListOrders, newListUsers), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
+                            debugger
+                            createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
@@ -101,20 +142,23 @@ export default (function () {
                     if (eventClick.currentTarget.id === "header_2") {
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
+                            createHeadTemplate(headers, eventClick);
                             createTemplate(newListOrders.sort(sortDate), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
+                            createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
-
                     }
                     if (eventClick.currentTarget.id === "header_3") {
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
+                            createHeadTemplate(headers, eventClick);
                             createTemplate(newListOrders.sort(sortAmount), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
+                            createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
@@ -122,9 +166,11 @@ export default (function () {
                     if (eventClick.currentTarget.id === "header_5") {
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
+                            createHeadTemplate(headers, eventClick);
                             createTemplate(newListOrders.sort(sortCardType), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
+                            createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
@@ -132,14 +178,16 @@ export default (function () {
                     if (eventClick.currentTarget.id === "header_6") {
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
+                            createHeadTemplate(headers, eventClick);
                             createTemplate(newListOrders.sort(sortLocation), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
+                            createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
                     }
-                })
+                });
             }
         }
 
@@ -156,17 +204,10 @@ export default (function () {
 
         const select = [...document.getElementsByTagName("select")][0];
         select.addEventListener("change", (event) => {
-            //console.log(true)
-            //selectCurrency = event.currentTarget.value;
-            //console.log(event.currentTarget.value)
-            //console.log(newListOrders)
-
-            convert(newListOrders, event)
+            convert(newListOrders, event);
             createTemplate(newListOrders);
-
         })
         select.value = selectCurrency;
-
     }
 
 
@@ -175,38 +216,21 @@ export default (function () {
 
     const txtPhrase = document.getElementById("search");
     txtPhrase.addEventListener("keyup", () => {
-        //console.log(5)
-        // let regPhrase = new RegExp(txtPhrase.value, 'i');
-        // let flag = false;
-        // newListOrders.map((item) => {
-        //     flag = regPhrase.test(+item.total)
-        //     if (flag) {
-        //        console.log(item)
-        //         return item;
-        //     }
 
+        let regPhrase = new RegExp(txtPhrase.value, 'i');
 
-        // })
+        const searched = newListOrders.filter((order) => {
+            return regPhrase.test(order.total) ? order : null;
 
-        // console.log(txtPhrase.value)
+        })
+
+        createTemplate(searched);
 
     });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     function table(props) {
-        //console.log(props)
+        if (props.length > 0) {
         return props.map((item, i, props) => (
             `<tr id=order_${props[i].id}>
                 <td>${props[i].transaction_id}</td>
@@ -217,27 +241,38 @@ export default (function () {
                 <td>${props[i].card_type}</td>
                 <td>${props[i].order_country} (${props[i].order_ip})<td>
             </tr>`
-        )).join('')
+        )).join('');
+        }
+        else {
+            return (`<tr>
+                <td colspan="7" class="text-center">Nothing found</td>
+            </tr>`);
+        }
     }
 
-    function moneyConvert(props) {
-        return (`${moneySymbol()} ${props.total}`);
-    }
+
 }());
 
+function moneyConvert(props) {
+    return (`${moneySymbol()} ${props.total}`);
+}
 
 function moneySymbol() {
     if (selectCurrency === 'USD') {
-        return (`$ `);
+        valueSign = `$`;
+        return valueSign;
     }
     if (selectCurrency === 'EUR') {
-        return (`€ `);
+        valueSign = `€`;
+        return valueSign;
     }
     if (selectCurrency === 'RUB') {
-        return (`₽ `);
+        valueSign = `₽`;
+        return valueSign;
     }
     else {
-        return (`${selectCurrency} `);
+        valueSign = selectCurrency;
+        return (`${valueSign} `);
     }
 }
 
@@ -384,66 +419,56 @@ function createHeaders(props, eventClick) {
 
 
 function statistics(propsOrders) {
+    if (propsOrders.length > 0) {
     return `<tr>
         <td colspan="3">Orders Count</td>
-         <td colspan="4">`+ orderCount(propsOrders) + `</td>
+         <td colspan="4">` + orderCount(propsOrders) + `</td>
     </tr>
     <tr>
         <td colspan="3">Orders Total</td>
-        <td colspan="4">${moneySymbol()}` + totalCheck(propsOrders) + `</td>
+        <td colspan="4">` + moneySymbol() + totalCheck(propsOrders) + `</td>
     </tr>
     <tr>
         <td colspan="3">Median Value</td>
-        <td colspan="4">${moneySymbol()}` + mediana(propsOrders) + `</td>
+        <td colspan="4">` + moneySymbol() + mediana(propsOrders) + `</td>
     </tr>
     <tr>
         <td colspan="3">Average Check</td>
-        <td colspan="4">${moneySymbol()}` + average(propsOrders) + `</td>
+        <td colspan="4">`+ moneySymbol() + average(propsOrders) + `</td>
     </tr>
     <tr>
         <td colspan="3">Average Check (Female)</td>
-        <td colspan="4">${moneySymbol()}` + femaleAvgCheck(propsOrders) + `</td>
+        <td colspan="4">`+ moneySymbol() + femaleAvgCheck(propsOrders) + `</td>
     </tr>
     <tr>
         <td colspan="3">Average Check (Male)</td>
-        <td colspan="4">${moneySymbol()}` + maleAvgCheck(propsOrders) + `</td>
-    </tr>`
+        <td colspan="4">`+ moneySymbol() + maleAvgCheck(propsOrders) + `</td>
+    </tr>`;
+    } else {
+        return (`<tr>
+        <td colspan="3">Orders Count</td>
+         <td colspan="4">n/a</td>
+    </tr>
+    <tr>
+        <td colspan="3">Orders Total</td>
+        <td colspan="4">n/a</td>
+    </tr>
+    <tr>
+        <td colspan="3">Median Value</td>
+        <td colspan="4">n/a</td>
+    </tr>
+    <tr>
+        <td colspan="3">Average Check</td>
+        <td colspan="4">n/a</td>
+    </tr>
+    <tr>
+        <td colspan="3">Average Check (Female)</td>
+        <td colspan="4">n/a</td>
+    </tr>
+    <tr>
+        <td colspan="3">Average Check (Male)</td>
+        <td colspan="4">n/a</td>
+    </tr>`);
+    }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function tableSearch() {
-    const txtPhrase = document.getElementById("search");
-    let table = document.getElementsByTagName("table")[0];
-    let tbody = document.getElementsByTagName("tbody")[0];
-    let regPhrase = new RegExp(txtPhrase.value, 'i');
-    let flag = false;
-    let mas = [];
-    // for (let i = 0; i < table.rows.length - 8; i++) {
-    //     flag = false;
-    //     flag = regPhrase.test(table.rows[i].cells[3].innerHTML);
-    //     //mas.push(tbody.children[i].remove())
-    //     if (flag) {
-    //         table.rows[i].style.display = "";
-    //     }
-    //     else {
-
-    //         //table.rows[i].style.display = "none";
-    //     }
-    //}
-}

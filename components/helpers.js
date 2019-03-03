@@ -4,6 +4,7 @@ import companies from '../data/companies';
 
 export function average(props) {
     return (totalCheck(props) / props.length).toFixed(2);
+
 }
 
 export function totalCheck(props) {
@@ -11,10 +12,10 @@ export function totalCheck(props) {
         return sum + +current.total;
     }, 0);
     return result.toFixed(2);
+
 }
 
 export function orderCount(props) {
-    //console.log(document.getElementsByTagName("tbody")[0].children)
     let result = props.reduce((sum, current, index) => {
         return index + 1;
     }, 0);
@@ -40,12 +41,6 @@ export function mediana(props) {
 }
 
 export function isActive(props) {
-    // if (props.classList.contains('hidden')) {
-    //     props.classList.remove('hidden');
-    // }
-    // else {
-    //     props.classList.add('hidden');
-    // }
     if (props.style.display === 'none') {
         props.style.display = 'block';
     }
@@ -83,7 +78,12 @@ export function femaleAvgCheck(props) {
             });
         }
     });
-    return (totalFemaleCheck / femaleCounter).toFixed(2);
+    if (props.length !== 0) {
+        return (totalFemaleCheck / femaleCounter).toFixed(2);
+    }
+    else {
+        return (`n/a`);
+    }
 }
 
 export function userInfo(props) {
@@ -180,29 +180,6 @@ function linkGen(props) {
         return `n/a`;
     }
 }
-// function dateBirthday(props) {
-//     //for (let i = 0; i < users.length; i++) {
-//         //console.log(props)
-//         if (props.birthday === users[1].birthday) {
-
-//         }
-//     //}
-//     if ( props.birthday !== null) {
-//         let date = new Date(+props.birthday);
-//         let month = `0`;
-//         if (date.getMonth() < 9) {
-//             month += date.getMonth() + 1;
-//         }
-//         else {
-//             month = date.getMonth() + 1;
-//         }
-//         return `${date.getDate()} / ${month} / ${date.getFullYear()}`
-//     }
-//     else {
-//         return `Nothing found`;
-//     }
-
-// }
 
 export function dateConvert(props) {
     if (props.created_at === undefined) {
@@ -272,7 +249,7 @@ function timeConvert(props) {
 export function cardConvert(props) {
     let str = "";
     for (let i = 0; i < props.length; i++) {
-        if (i > 1 && i < props.length-4) {
+        if (i > 1 && i < props.length - 4) {
             str += "*";
         }
         else {
