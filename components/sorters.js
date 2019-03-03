@@ -49,6 +49,7 @@ export function sortUser(listOrders, listUsers) {
             }
         })
     })
+   
     // for (let i =0; i < users.length; i++) {
     //     newOrders = [
     //         ...newOrders,
@@ -58,7 +59,11 @@ export function sortUser(listOrders, listUsers) {
     //     ];
     // }
     //console.log(list);
-    return newOrders;
+    listOrders.splice(0, listOrders.length);
+    for (let i =0; i < newOrders.length; i++) {
+        listOrders.push(newOrders[i]);
+    }
+    return listOrders;
 }
 //orders.sort(sortLocation);
 export function sortLocation(a, b) {

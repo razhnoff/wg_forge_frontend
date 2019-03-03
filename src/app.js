@@ -16,7 +16,7 @@ let selectCurrency = 'USD';
 
 
 let sortedBy = null;
-let valueSign;
+
 fetch(url, {
     method: 'GET'
 })
@@ -47,8 +47,8 @@ export default (function () {
         <thead>
             <tr>
                 <th>Search:</th>
-                <th colspan="2">
-                    <input type="text" class="form-control" id="search" placeholder="Enter user info, date,location, card type, order amount or transaction id" title="Enter user info, date,location, card type, order amount or transaction id">
+                <th colspan="4">
+                    <input type="text" class="form-control" id="search" placeholder="Enter user info, date, location, card type, order amount or transaction id" title="Enter user info, date, location, card type, order amount or transaction id">
                 </th>
                 <th>Convert Money: </th>
                 <th>
@@ -58,39 +58,17 @@ export default (function () {
                 </th>
             </tr>
         </thead>
-        </table >`)
+        </table >`);
     }
 
     function createHeadTemplate(tableHeaders, event) {
-
         const theadRow = document.getElementsByTagName("thead")[0];
         if (theadRow.children[1]) {
             theadRow.children[1].remove();
         }
         let newTableRow = document.createElement("tr");
         newTableRow.innerHTML = createHeaders(tableHeaders, event);
-        theadRow.appendChild(newTableRow)
-        // document.getElementById("app").innerHTML =
-        //     (`<table class="table table-dark table-bordered table-hover">
-        // <thead>
-        //     <tr>
-        //         <th>Search:</th>
-        //         <th colspan="2">
-        //             <input type="text" class="form-control" id="search" placeholder="Enter user info, date,location, card type, order amount or transaction id" title="Enter user info, date,location, card type, order amount or transaction id">
-        //         </th>
-        //         <th>Convert Money: </th>
-        //         <th>
-        //             <select class="form-control form-control-sm" title="Convert money">
-        //                 `+ converterList(financeList) + `
-        //             </select>
-        //         </th>
-        //     </tr>
-        //     <tr>
-        //         ` + createHeaders(tableHeaders, event) +
-        //         `
-        //     </tr>
-        // </thead>
-        // </table >`);
+        theadRow.appendChild(newTableRow);
     }
 
 
@@ -110,30 +88,29 @@ export default (function () {
             if (i !== 4) {
                 document.getElementsByTagName("thead")[0].children[1].children[i].addEventListener("click", (eventClick) => {
                     if (eventClick.currentTarget.id === "header_0") {
-                        debugger
+                        //debugger
                         if (sortedBy != eventClick.currentTarget.id) {
-
                             sortedBy = eventClick.currentTarget.id;
                             createHeadTemplate(headers, eventClick);
                             createTemplate(newListOrders.sort(sortTransaction));
 
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
-                            debugger
+                            //debugger
                             createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
                     }
                     if (eventClick.currentTarget.id === "header_1") {
-                        debugger
+                        //debugger
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
                             createHeadTemplate(headers, eventClick);
                             createTemplate(sortUser(newListOrders, newListUsers), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
-                            debugger
+                            //debugger
                             createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
@@ -205,6 +182,7 @@ export default (function () {
         const select = [...document.getElementsByTagName("select")][0];
         select.addEventListener("change", (event) => {
             convert(newListOrders, event);
+            debugger
             createTemplate(newListOrders);
         })
         select.value = selectCurrency;
@@ -231,8 +209,8 @@ export default (function () {
 
     function table(props) {
         if (props.length > 0) {
-        return props.map((item, i, props) => (
-            `<tr id=order_${props[i].id}>
+            return props.map((item, i, props) => (
+                `<tr id=order_${props[i].id}>
                 <td>${props[i].transaction_id}</td>
                 <td class=user_data>${userInfo(props[i].user_id)}</td>
                 <td>${dateConvert(props[i])}</td> 
@@ -241,11 +219,11 @@ export default (function () {
                 <td>${props[i].card_type}</td>
                 <td>${props[i].order_country} (${props[i].order_ip})<td>
             </tr>`
-        )).join('');
+            )).join('');
         }
         else {
             return (`<tr>
-                <td colspan="7" class="text-center">Nothing found</td>
+                <td colspan="7" class="bg-danger text-center">Nothing found</td>
             </tr>`);
         }
     }
@@ -259,45 +237,46 @@ function moneyConvert(props) {
 
 function moneySymbol() {
     if (selectCurrency === 'USD') {
-        valueSign = `$`;
-        return valueSign;
+        return (`$ `);
     }
     if (selectCurrency === 'EUR') {
-        valueSign = `€`;
-        return valueSign;
+        return (`€ `);
     }
     if (selectCurrency === 'RUB') {
-        valueSign = `₽`;
-        return valueSign;
+        return (`₽ `);
     }
     else {
-        valueSign = selectCurrency;
-        return (`${valueSign} `);
+        return (`${selectCurrency} `);
     }
 }
 
 function convert(props, event) {
-    for (let key in rates) {
-        if (selectCurrency === key) {
-            props.map((order) => {
-                order.total = (order.total / rates[key]).toFixed(2);
-            });
-        }
-    }
-    selectCurrency = event.currentTarget.value;
-    if (selectCurrency !== 'EUR') {
-        for (let key in rates) {
-            if (selectCurrency === key) {
-                props.map((order) => {
-                    order.total = (order.total * rates[key]).toFixed(2);
-                });
-            }
-        }
-        return props
-    }
-    else {
-        return props;
-    }
+    //if (selectCurrency !)
+    props.map((order) => {
+        order.total = (order.total / rates[selectCurrency]).toFixed(2);
+    });
+
+    // for (let key in rates) {
+    //     if (selectCurrency === key) {
+    //         props.map((order) => {
+    //             order.total = (order.total / rates[key]).toFixed(2);
+    //         });
+    //     }
+    // }
+    // selectCurrency = event.currentTarget.value;
+    // if (selectCurrency !== 'EUR') {
+    //     for (let key in rates) {
+    //         if (selectCurrency === key) {
+    //             props.map((order) => {
+    //                 order.total = (order.total * rates[key]).toFixed(2);
+    //             });
+    //         }
+    //     }
+    //     return props
+    // }
+    // else {
+    //     return props;
+    // }
 }
 
 function converterList(financeList) {
@@ -420,7 +399,7 @@ function createHeaders(props, eventClick) {
 
 function statistics(propsOrders) {
     if (propsOrders.length > 0) {
-    return `<tr>
+        return `<tr>
         <td colspan="3">Orders Count</td>
          <td colspan="4">` + orderCount(propsOrders) + `</td>
     </tr>
@@ -436,11 +415,11 @@ function statistics(propsOrders) {
         <td colspan="3">Average Check</td>
         <td colspan="4">`+ moneySymbol() + average(propsOrders) + `</td>
     </tr>
-    <tr>
+    <tr class="bg-danger">
         <td colspan="3">Average Check (Female)</td>
         <td colspan="4">`+ moneySymbol() + femaleAvgCheck(propsOrders) + `</td>
     </tr>
-    <tr>
+    <tr class="bg-primary">
         <td colspan="3">Average Check (Male)</td>
         <td colspan="4">`+ moneySymbol() + maleAvgCheck(propsOrders) + `</td>
     </tr>`;
@@ -461,11 +440,11 @@ function statistics(propsOrders) {
         <td colspan="3">Average Check</td>
         <td colspan="4">n/a</td>
     </tr>
-    <tr>
+    <tr class="bg-danger">
         <td colspan="3">Average Check (Female)</td>
         <td colspan="4">n/a</td>
     </tr>
-    <tr>
+    <tr class="bg-primary">
         <td colspan="3">Average Check (Male)</td>
         <td colspan="4">n/a</td>
     </tr>`);

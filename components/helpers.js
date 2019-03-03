@@ -62,7 +62,11 @@ export function maleAvgCheck(props) {
             });
         }
     });
-    return (totalMaleCheck / maleCounter).toFixed(2);
+    if (maleCounter) {
+        return (totalMaleCheck / maleCounter).toFixed(2);
+    } else {
+        return (`n/a`);
+    }
 }
 
 export function femaleAvgCheck(props) {
@@ -78,11 +82,11 @@ export function femaleAvgCheck(props) {
             });
         }
     });
-    if (props.length !== 0) {
+    if (femaleCounter) {
         return (totalFemaleCheck / femaleCounter).toFixed(2);
     }
     else {
-        return (`n/a`);
+        return `n/a`;
     }
 }
 
@@ -138,17 +142,7 @@ function companyURL(props) {
         return `n/a`;
     }
 }
-// linkBlock();
-// function linkBlock() {
-//     //document.getElementsByTagName("a")[1].innerText = "1";
-//     let a = document.getElementsByTagName("a")[1];
-//     console.log(a);
-//         // for (let i = 0; i < document.getElementsByTagName("a").length; i++) {
-//         //     if (document.getElementsByTagName("a")[i].innerText === "Nothing found") {
-//         //         console.log(4)
-//         //     }
-//         // }
-// }
+
 function companyTitle(props) {
     if (props.company_id !== null) {
         for (let i = 0; i < companies.length; i++) {
