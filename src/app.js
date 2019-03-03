@@ -69,6 +69,7 @@ export default (function () {
         let newTableRow = document.createElement("tr");
         newTableRow.innerHTML = createHeaders(tableHeaders, event);
         theadRow.appendChild(newTableRow);
+        listeners();
     }
 
 
@@ -80,7 +81,7 @@ export default (function () {
         let newTbody = document.createElement('tbody');
         newTbody.innerHTML = table(propsOrders) + statistics(propsOrders);
         document.getElementsByTagName("table")[0].appendChild(newTbody);
-        listeners();
+        listenerUserInfo();
     }
 
     function listeners() {
@@ -88,29 +89,24 @@ export default (function () {
             if (i !== 4) {
                 document.getElementsByTagName("thead")[0].children[1].children[i].addEventListener("click", (eventClick) => {
                     if (eventClick.currentTarget.id === "header_0") {
-                        //debugger
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
                             createHeadTemplate(headers, eventClick);
                             createTemplate(newListOrders.sort(sortTransaction));
-
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
-                            //debugger
                             createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
                         }
                     }
                     if (eventClick.currentTarget.id === "header_1") {
-                        //debugger
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
                             createHeadTemplate(headers, eventClick);
                             createTemplate(sortUser(newListOrders, newListUsers), eventClick);
                         }
                         else if (sortedBy == eventClick.currentTarget.id) {
-                            //debugger
                             createHeadTemplate(headers);
                             createTemplate(orders);
                             sortedBy = null;
@@ -167,7 +163,9 @@ export default (function () {
                 });
             }
         }
+    }
 
+    function listenerUserInfo() {
         const userDetailInfo = [...document.getElementsByClassName("user-details")];
         const userData = [...document.getElementsByClassName("user_data")];
         userData.forEach((item, i, userData) => {
@@ -176,34 +174,25 @@ export default (function () {
                 isActive(userDetailInfo[i]);
             });
         });
-
-
-
-        const select = [...document.getElementsByTagName("select")][0];
-        select.addEventListener("change", (event) => {
-            convert(newListOrders, event);
-            debugger
-            createTemplate(newListOrders);
-        })
-        select.value = selectCurrency;
     }
 
-
+    const select = [...document.getElementsByTagName("select")][0];
+    select.addEventListener("change", (event) => {
+        convert(newListOrders, event);
+        debugger
+        createTemplate(newListOrders);
+    })
+    select.value = selectCurrency;
 
 
 
     const txtPhrase = document.getElementById("search");
     txtPhrase.addEventListener("keyup", () => {
-
         let regPhrase = new RegExp(txtPhrase.value, 'i');
-
         const searched = newListOrders.filter((order) => {
             return regPhrase.test(order.total) ? order : null;
-
         })
-
         createTemplate(searched);
-
     });
 
 
@@ -251,32 +240,21 @@ function moneySymbol() {
 }
 
 function convert(props, event) {
-    //if (selectCurrency !)
-    props.map((order) => {
-        order.total = (order.total / rates[selectCurrency]).toFixed(2);
-    });
-
-    // for (let key in rates) {
-    //     if (selectCurrency === key) {
-    //         props.map((order) => {
-    //             order.total = (order.total / rates[key]).toFixed(2);
-    //         });
-    //     }
-    // }
-    // selectCurrency = event.currentTarget.value;
-    // if (selectCurrency !== 'EUR') {
-    //     for (let key in rates) {
-    //         if (selectCurrency === key) {
-    //             props.map((order) => {
-    //                 order.total = (order.total * rates[key]).toFixed(2);
-    //             });
-    //         }
-    //     }
-    //     return props
-    // }
-    // else {
-    //     return props;
-    // }
+    if (selectCurrency !== 'EUR') {
+        props.map((order) => {
+            order.total = (order.total / rates[selectCurrency]).toFixed(2);
+        });
+    }
+    selectCurrency = event.currentTarget.value;
+    if (selectCurrency !== 'EUR') {
+        props.map((order) => {
+            order.total = (order.total * rates[selectCurrency]).toFixed(2);
+        });
+        return props
+    }
+    else {
+        return props;
+    }
 }
 
 function converterList(financeList) {
@@ -287,8 +265,7 @@ function converterList(financeList) {
         else {
             return (`<option value="${item}">${item}</option>`);
         }
-
-    })
+    });
 }
 function createHeaders(props, eventClick) {
     if (eventClick !== undefined) {
@@ -396,7 +373,6 @@ function createHeaders(props, eventClick) {
     }).join('');
 }
 
-
 function statistics(propsOrders) {
     if (propsOrders.length > 0) {
         return `<tr>
@@ -450,4 +426,3 @@ function statistics(propsOrders) {
     </tr>`);
     }
 }
-
