@@ -12,8 +12,9 @@ const url = `https://api.exchangeratesapi.io/latest`;
 let rates = {};
 let selectCurrency = 'USD';
 
-
 let sortedBy = null;
+
+
 
 fetch(url, {
     method: 'GET'
@@ -29,7 +30,7 @@ fetch(url, {
 
 const headers = ["Transaction ID", "User Info", "Order Date", "Order Amount", "Card Number", "Card Type", "Location"];
 const financeList = ["USD", "RUB", "EUR", "NZD", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "MXN", "CZK", "DKK", "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY", "KRW", "MYR", "NOK", "PHP", "PLN", "RON", "SEK", "SGD", "THB", "TRY", "ZAR"];
-
+let searched;
 let newListOrders = [...orders];
 const newListUsers = [...users];
 
@@ -85,105 +86,65 @@ export default (function () {
     function listeners() {
         for (let i = 0; i < headers.length; i++) {
             if (i !== 4) {
-                document.getElementsByTagName("thead")[0].children[1].children[i].addEventListener("click", (eventClick) => {
-                    debugger
-                    if (eventClick.currentTarget.id === "header_0") {
-                        if (sortedBy != eventClick.currentTarget.id) {
-                            sortedBy = eventClick.currentTarget.id;
-                            createHeadTemplate(headers, eventClick);
-                            createTemplate(newListOrders.sort(sortTransaction));
-                        }
-                        else if (sortedBy == eventClick.currentTarget.id) {
-                            createHeadTemplate(headers);
-                            createTemplate(orders);
-                            sortedBy = null;
-                        }
-                    }
-                    if (eventClick.currentTarget.id === "header_1") {
-                        if (sortedBy != eventClick.currentTarget.id) {
-                            sortedBy = eventClick.currentTarget.id;
-                            createHeadTemplate(headers, eventClick);
-                            createTemplate(sortUser(newListOrders, newListUsers), eventClick);
-                        }
-                        else if (sortedBy == eventClick.currentTarget.id) {
-                            createHeadTemplate(headers);
-                            createTemplate(orders);
-                            sortedBy = null;
-                        }
-                    }
-                    if (eventClick.currentTarget.id === "header_2") {
-                        if (sortedBy != eventClick.currentTarget.id) {
-                            sortedBy = eventClick.currentTarget.id;
-                            createHeadTemplate(headers, eventClick);
-                            createTemplate(newListOrders.sort(sortDate), eventClick);
-                        }
-                        else if (sortedBy == eventClick.currentTarget.id) {
-                            createHeadTemplate(headers);
-                            createTemplate(orders);
-                            sortedBy = null;
-                        }
-                    }
-                    if (eventClick.currentTarget.id === "header_3") {
-                        if (sortedBy != eventClick.currentTarget.id) {
-                            sortedBy = eventClick.currentTarget.id;
-                            createHeadTemplate(headers, eventClick);
-                            createTemplate(newListOrders.sort(sortAmount), eventClick);
-                        }
-                        else if (sortedBy == eventClick.currentTarget.id) {
-                            createHeadTemplate(headers);
-                            createTemplate(orders);
-                            sortedBy = null;
-                        }
-                    }
-                    if (eventClick.currentTarget.id === "header_5") {
-                        if (sortedBy != eventClick.currentTarget.id) {
-                            sortedBy = eventClick.currentTarget.id;
-                            createHeadTemplate(headers, eventClick);
-                            createTemplate(newListOrders.sort(sortCardType), eventClick);
-                        }
-                        else if (sortedBy == eventClick.currentTarget.id) {
-                            createHeadTemplate(headers);
-                            createTemplate(orders);
-                            sortedBy = null;
-                        }
-                    }
-                    if (eventClick.currentTarget.id === "header_6") {
-                        if (sortedBy != eventClick.currentTarget.id) {
-                            sortedBy = eventClick.currentTarget.id;
-                            createHeadTemplate(headers, eventClick);
-                            createTemplate(newListOrders.sort(sortLocation), eventClick);
-                        }
-                        else if (sortedBy == eventClick.currentTarget.id) {
-                            createHeadTemplate(headers);
-                            createTemplate(orders);
-                            sortedBy = null;
-                        }
-                    }
-                });
+                document.getElementsByTagName("thead")[0].children[1].children[i].addEventListener("click", handlerSort);
+            }
+        }
+    }
+
+    function sortAction(func) {
+        switch (func) {
+            case 'header_0':
+                return sortTransaction;
+            case 'header_2':
+                return sortDate
+            case 'header_3':
+                return sortAmount
+            case 'header_5':
+                return sortCardType
+            case 'header_6':
+                return sortLocation;
+        }
+    }
+
+    function handlerSort(event) {
+        if (event.currentTarget.id !== "header_1") {
+            if (sortedBy != event.currentTarget.id) {
+                sortedBy = event.currentTarget.id;
+                createHeadTemplate(headers, event);
+                createTemplate(newListOrders.sort(sortAction(sortedBy)));
+            }
+            else if (sortedBy == event.currentTarget.id) {
+                createHeadTemplate(headers);
+                createTemplate(orders);
+                sortedBy = null;
+            }
+        } else {
+            if (sortedBy != event.currentTarget.id) {
+                sortedBy = event.currentTarget.id;
+                createHeadTemplate(headers, event);
+                createTemplate(sortUser(newListOrders, newListUsers), event);
+            }
+            else if (sortedBy == event.currentTarget.id) {
+                createHeadTemplate(headers);
+                createTemplate(orders);
+                sortedBy = null;
             }
         }
     }
 
 
-    
-
     const select = [...document.getElementsByTagName("select")][0];
     select.addEventListener("change", (event) => {
-        debugger
         if (sortedBy == null) {
-            debugger
             newListOrders = [...orders];
+            //debugger
             convert(newListOrders, event);
             createTemplate(newListOrders);
-            
         }
         else {
             convert(newListOrders, event);
             createTemplate(newListOrders);
         }
-        // convert(newListOrders, event);
-        // debugger
-        // createTemplate(newListOrders);
     })
     select.value = selectCurrency;
 
@@ -192,11 +153,25 @@ export default (function () {
     const txtPhrase = document.getElementById("search");
     txtPhrase.addEventListener("keyup", () => {
         let regPhrase = new RegExp(txtPhrase.value, 'i');
-        const searched = newListOrders.filter((order) => {
+        console.log(txtPhrase.value)
+        //debugger
+        newListOrders = [...orders].filter((order) => {
             return regPhrase.test(order.total) ? order : null;
         })
-        createTemplate(searched);
+        // if (txtPhrase.value) {
+        //     console.log(true)
+        //     newListOrders = searched
+        // }
+        // else {
+        //     console.log(false)
+        // }
+        createTemplate(newListOrders);
     });
+
+
+
+
+
 
 
     function listenerUserInfo() {
@@ -227,11 +202,10 @@ export default (function () {
         }
         else {
             return (`<tr>
-                <td colspan="7" class="bg-danger text-center">Nothing found</td>
+                <td colspan="7" class="text-center">Nothing found</td>
             </tr>`);
         }
     }
-
 
 }());
 
@@ -283,7 +257,7 @@ function converterList(financeList) {
     });
 }
 function createHeaders(props, eventClick) {
-    debugger
+    //debugger
     if (eventClick !== undefined) {
         if (eventClick.target.cellIndex === 0) {
             return props.map((item, i) => {
@@ -407,11 +381,11 @@ function statistics(propsOrders) {
         <td colspan="3">Average Check</td>
         <td colspan="4">`+ moneySymbol() + average(propsOrders) + `</td>
     </tr>
-    <tr class="bg-danger">
+    <tr>
         <td colspan="3">Average Check (Female)</td>
         <td colspan="4">`+ moneySymbol() + femaleAvgCheck(propsOrders) + `</td>
     </tr>
-    <tr class="bg-primary">
+    <tr>
         <td colspan="3">Average Check (Male)</td>
         <td colspan="4">`+ moneySymbol() + maleAvgCheck(propsOrders) + `</td>
     </tr>`;
@@ -432,11 +406,11 @@ function statistics(propsOrders) {
         <td colspan="3">Average Check</td>
         <td colspan="4">n/a</td>
     </tr>
-    <tr class="bg-danger">
+    <tr>
         <td colspan="3">Average Check (Female)</td>
         <td colspan="4">n/a</td>
     </tr>
-    <tr class="bg-primary">
+    <tr>
         <td colspan="3">Average Check (Male)</td>
         <td colspan="4">n/a</td>
     </tr>`);
