@@ -58,21 +58,28 @@ export default (function () {
             </tr>
         </thead>
         </table >`);
+        [...document.getElementsByTagName("select")][0].removeEventListener("change", handlerConvert);
     }
 
-    function createHeadTemplate(tableHeaders, event) {
+    function createHeadTemplate(tableHeaders, index) {
         const theadRow = document.getElementsByTagName("thead")[0];
         if (theadRow.children[1]) {
             theadRow.children[1].remove();
         }
         let newTableRow = document.createElement("tr");
-        newTableRow.innerHTML = createHeaders(tableHeaders, event);
+        newTableRow.innerHTML = createHeaders(tableHeaders, index);
         theadRow.appendChild(newTableRow);
+        for (let i = 0; i < headers.length; i++) {
+            document.getElementsByTagName("thead")[0].children[1].children[i].removeEventListener("click", handlerSort);
+        }
         listeners();
     }
 
 
     function createTemplate(propsOrders) {
+        [...document.getElementsByClassName("user_data")].forEach((item) => {
+            item.children[0].addEventListener("click", handlerUserDetails);
+        });
         const tbody = document.getElementsByTagName("tbody")[0];
         if (tbody) {
             tbody.remove();
@@ -107,34 +114,39 @@ export default (function () {
     }
 
     function handlerSort(event) {
-        if (event.currentTarget.id !== "header_1") {
-            if (sortedBy != event.currentTarget.id) {
-                sortedBy = event.currentTarget.id;
-                createHeadTemplate(headers, event);
+        const name = typeof event === 'object' ? event.currentTarget.id : event;
+        const index = typeof event === 'object' ? event.target.cellIndex : event;
+
+        if (name !== "header_1") {
+            if (sortedBy != name) {
+                sortedBy = name;
+                createHeadTemplate(headers, index);
                 createTemplate(newListOrders.sort(sortAction(sortedBy)));
             }
-            else if (sortedBy == event.currentTarget.id) {
-                createHeadTemplate(headers);
-                createTemplate(orders);
-                sortedBy = null;
-            }
+            // else if (sortedBy == name) {
+            //     createHeadTemplate(headers);
+            //     createTemplate(newListOrders);
+            //     sortedBy = null;
+            // }
         } else {
-            if (sortedBy != event.currentTarget.id) {
-                sortedBy = event.currentTarget.id;
-                createHeadTemplate(headers, event);
-                createTemplate(sortUser(newListOrders, newListUsers), event);
+            if (sortedBy != name) {
+                sortedBy = name;
+                createHeadTemplate(headers, index);
+                createTemplate(sortUser(newListOrders, newListUsers), index);
             }
-            else if (sortedBy == event.currentTarget.id) {
-                createHeadTemplate(headers);
-                createTemplate(orders);
-                sortedBy = null;
-            }
+            // else if (sortedBy == name) {
+            //     createHeadTemplate(headers);
+            //     createTemplate(orders);
+            //     sortedBy = null;
+            // }
         }
     }
 
 
-    const select = [...document.getElementsByTagName("select")][0];
-    select.addEventListener("change", (event) => {
+    [...document.getElementsByTagName("select")][0].addEventListener("change", handlerConvert);
+    [...document.getElementsByTagName("select")][0].value = selectCurrency;
+
+    function handlerConvert(event) {
         if (sortedBy == null) {
             newListOrders = [...orders];
             //debugger
@@ -145,45 +157,39 @@ export default (function () {
             convert(newListOrders, event);
             createTemplate(newListOrders);
         }
-    })
-    select.value = selectCurrency;
-
+    }
 
 
     const txtPhrase = document.getElementById("search");
-    txtPhrase.addEventListener("keyup", () => {
+    txtPhrase.addEventListener("keyup", handlerSearch);
+
+    function handlerSearch() {
         let regPhrase = new RegExp(txtPhrase.value, 'i');
-        console.log(txtPhrase.value)
         //debugger
         newListOrders = [...orders].filter((order) => {
             return regPhrase.test(order.total) ? order : null;
         })
-        // if (txtPhrase.value) {
-        //     console.log(true)
-        //     newListOrders = searched
-        // }
-        // else {
-        //     console.log(false)
-        // }
         createTemplate(newListOrders);
-    });
-
-
+        if (sortedBy) {
+            const sort = sortedBy;
+            sortedBy = null;
+            handlerSort(sort);
+        }
+    }
 
 
 
 
 
     function listenerUserInfo() {
-        const userDetailInfo = [...document.getElementsByClassName("user-details")];
-        const userData = [...document.getElementsByClassName("user_data")];
-
-        userData.forEach((item, i, userData) => {
-            userData[i].children[0].addEventListener("click", (event) => {
-                event.preventDefault();
-                isActive(userDetailInfo[i]);
-            });
+        [...document.getElementsByClassName("user_data")].forEach((item) => {
+            item.children[0].addEventListener("click", handlerUserDetails);
         });
+    }
+
+    function handlerUserDetails(event) {
+        event.preventDefault();
+        isActive(event.currentTarget.nextElementSibling);
     }
 
     function table(props) {
@@ -256,10 +262,10 @@ function converterList(financeList) {
         }
     });
 }
-function createHeaders(props, eventClick) {
+function createHeaders(props, cellIndex) {
     //debugger
-    if (eventClick !== undefined) {
-        if (eventClick.target.cellIndex === 0) {
+    if (cellIndex !== undefined) {
+        if (cellIndex === 0) {
             return props.map((item, i) => {
                 if (item !== props[4] && i === 0) {
                     return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
@@ -274,7 +280,7 @@ function createHeaders(props, eventClick) {
                 }
             }).join('');
         }
-        if (event.target.cellIndex === 1) {
+        if (cellIndex === 1) {
             return props.map((item, i) => {
                 if (item !== props[4] && i === 1) {
                     return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
@@ -289,7 +295,7 @@ function createHeaders(props, eventClick) {
                 }
             }).join('');
         }
-        if (event.target.cellIndex === 2) {
+        if (cellIndex === 2) {
             return props.map((item, i) => {
                 if (item !== props[4] && i === 2) {
                     return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
@@ -305,7 +311,7 @@ function createHeaders(props, eventClick) {
                 }
             }).join('');
         }
-        if (event.target.cellIndex === 3) {
+        if (cellIndex === 3) {
             return props.map((item, i) => {
                 if (item !== props[4] && i === 3) {
                     return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
@@ -320,7 +326,7 @@ function createHeaders(props, eventClick) {
                 }
             }).join('');
         }
-        if (event.target.cellIndex === 5) {
+        if (cellIndex === 5) {
             return props.map((item, i) => {
                 if (item !== props[4] && i === 5) {
                     return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
@@ -335,7 +341,7 @@ function createHeaders(props, eventClick) {
                 }
             }).join('');
         }
-        if (event.target.cellIndex === 6) {
+        if (cellIndex === 6) {
             return props.map((item, i) => {
                 if (item !== props[4] && i === 6) {
                     return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
