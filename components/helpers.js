@@ -40,15 +40,6 @@ export function mediana(props) {
     }
 }
 
-export function isActive(props) {
-    if (props.style.display === 'none') {
-        props.style.display = 'block';
-    }
-    else {
-        props.style.display = 'none';
-    }
-}
-
 export function maleAvgCheck(props) {
     let totalMaleCheck = 0,
         maleCounter = 0;
@@ -90,6 +81,16 @@ export function femaleAvgCheck(props) {
     }
 }
 
+export function isActive(props) {
+    if (props.style.display === 'none') {
+        props.style.display = 'block';
+    }
+    else {
+        props.style.display = 'none';
+    }
+}
+
+
 export function userInfo(props) {
     let gender = "";
     for (let i = 0; i < users.length; i++) {
@@ -100,8 +101,28 @@ export function userInfo(props) {
             else {
                 gender = "Ms";
             }
-            return `<a href="#">${gender}. ${users[i].first_name} ${users[i].last_name}</a>${userDetails(users[i])}`;
+            return `<a href="#">${gender}. ${users[i].first_name} ${users[i].last_name}</a>
+            ${userDetails(users[i])}`;
         }
+    }
+}
+
+export function userDetails(props) {
+    return `<div class="user-details" style="display: none">
+        <p>Birthday: ` + dateConvert(props) + `</p>
+        <p><img src="${props.avatar}" width="100px"></p>
+        <p>Company: ` + linkGen(props) + `</p>
+        <p>Industry: ` + companyIndustry(props) + ` / ` + companySector(props) + `</p>
+    </div>`;
+}
+
+function linkGen(props) {
+    const comp = companyTitle(props);
+    if (comp) {
+        return `<a href=` + companyURL(props) + ` target="_blank">` + companyTitle(props) + `.</a>`
+    }
+    else {
+        return `n/a`;
     }
 }
 
@@ -156,24 +177,7 @@ function companyTitle(props) {
     }
 }
 
-export function userDetails(props) {
-    return `<div class="user-details" style="display: none">
-        <p>Birthday: ` + dateConvert(props) + `</p>
-        <p><img src="${props.avatar}" width="100px"></p>
-        <p>Company: ` + linkGen(props) + `</p>
-        <p>Industry: ` + companyIndustry(props) + ` / ` + companySector(props) + `</p>
-    </div>`;
-}
 
-function linkGen(props) {
-    const comp = companyTitle(props);
-    if (comp) {
-        return `<a href=` + companyURL(props) + ` target="_blank">` + companyTitle(props) + `.</a>`
-    }
-    else {
-        return `n/a`;
-    }
-}
 
 export function dateConvert(props) {
     if (props.created_at === undefined) {
