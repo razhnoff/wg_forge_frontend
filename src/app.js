@@ -3,14 +3,12 @@ import orders from '../data/orders.json';
 import { isActive, userInfo, dateConvert, cardConvert, orderCount, average, totalCheck, femaleAvgCheck, maleAvgCheck, mediana } from '../components/helpers.js';
 import { sortAmount, sortTransaction, sortDate, sortCardType, sortUser, sortLocation } from '../components/sorters.js';
 import users from '../data/users.json';
-import { get } from 'https';
+//import { get } from 'https';
 
 
-// let xhr = new XMLHttpRequest();
+
 const url = `https://api.exchangeratesapi.io/latest`;
-// xhr.open("GET", url, false);
-// xhr.send();
-// let response = JSON.parse(xhr.response);
+
 let rates = {};
 let selectCurrency = 'USD';
 
@@ -32,7 +30,7 @@ fetch(url, {
 const headers = ["Transaction ID", "User Info", "Order Date", "Order Amount", "Card Number", "Card Type", "Location"];
 const financeList = ["USD", "RUB", "EUR", "NZD", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "MXN", "CZK", "DKK", "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY", "KRW", "MYR", "NOK", "PHP", "PLN", "RON", "SEK", "SGD", "THB", "TRY", "ZAR"];
 
-const newListOrders = [...orders];
+let newListOrders = [...orders];
 const newListUsers = [...users];
 
 export default (function () {
@@ -88,6 +86,7 @@ export default (function () {
         for (let i = 0; i < headers.length; i++) {
             if (i !== 4) {
                 document.getElementsByTagName("thead")[0].children[1].children[i].addEventListener("click", (eventClick) => {
+                    debugger
                     if (eventClick.currentTarget.id === "header_0") {
                         if (sortedBy != eventClick.currentTarget.id) {
                             sortedBy = eventClick.currentTarget.id;
@@ -165,22 +164,26 @@ export default (function () {
         }
     }
 
-    function listenerUserInfo() {
-        const userDetailInfo = [...document.getElementsByClassName("user-details")];
-        const userData = [...document.getElementsByClassName("user_data")];
-        userData.forEach((item, i, userData) => {
-            userData[i].children[0].addEventListener("click", (event) => {
-                event.preventDefault();
-                isActive(userDetailInfo[i]);
-            });
-        });
-    }
+
+    
 
     const select = [...document.getElementsByTagName("select")][0];
     select.addEventListener("change", (event) => {
-        convert(newListOrders, event);
         debugger
-        createTemplate(newListOrders);
+        if (sortedBy == null) {
+            debugger
+            newListOrders = [...orders];
+            convert(newListOrders, event);
+            createTemplate(newListOrders);
+            
+        }
+        else {
+            convert(newListOrders, event);
+            createTemplate(newListOrders);
+        }
+        // convert(newListOrders, event);
+        // debugger
+        // createTemplate(newListOrders);
     })
     select.value = selectCurrency;
 
@@ -195,6 +198,18 @@ export default (function () {
         createTemplate(searched);
     });
 
+
+    function listenerUserInfo() {
+        const userDetailInfo = [...document.getElementsByClassName("user-details")];
+        const userData = [...document.getElementsByClassName("user_data")];
+
+        userData.forEach((item, i, userData) => {
+            userData[i].children[0].addEventListener("click", (event) => {
+                event.preventDefault();
+                isActive(userDetailInfo[i]);
+            });
+        });
+    }
 
     function table(props) {
         if (props.length > 0) {
@@ -268,6 +283,7 @@ function converterList(financeList) {
     });
 }
 function createHeaders(props, eventClick) {
+    debugger
     if (eventClick !== undefined) {
         if (eventClick.target.cellIndex === 0) {
             return props.map((item, i) => {
