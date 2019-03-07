@@ -49,16 +49,6 @@ export function sortUser(listOrders, listUsers) {
             }
         })
     })
-   
-    // for (let i =0; i < users.length; i++) {
-    //     newOrders = [
-    //         ...newOrders,
-    //         ...list.filter((order) => {
-    //             return order.user_id === users[i].id;
-    //         })
-    //     ];
-    // }
-    //console.log(list);
     listOrders.splice(0, listOrders.length);
     for (let i =0; i < newOrders.length; i++) {
         listOrders.push(newOrders[i]);
