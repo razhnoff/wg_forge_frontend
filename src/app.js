@@ -115,30 +115,45 @@ export default (function () {
 
     function handlerSort(event) {
         const name = typeof event === 'object' ? event.currentTarget.id : event;
-        const index = typeof event === 'object' ? event.target.cellIndex : event;
-
+        let index = typeof event === 'object' ? event.target.cellIndex : event;
+        debugger
         if (name !== "header_1") {
             if (sortedBy != name) {
+                console.log(sortedBy)
                 sortedBy = name;
+                typeof index === 'number' ? 1: index = +index.charAt(index.length - 1);
                 createHeadTemplate(headers, index);
                 createTemplate(newListOrders.sort(sortAction(sortedBy)));
+                // if (typeof index == 'number') {
+                //     //console.log(index)
+                //     createHeadTemplate(headers, index);
+                //     createTemplate(newListOrders.sort(sortAction(sortedBy)));
+                // }
+                // else {
+                //     index = +index.charAt(index.length - 1);
+                //     createHeadTemplate(headers, index);
+                //     createTemplate(newListOrders.sort(sortAction(sortedBy)));
+                // }
             }
-            // else if (sortedBy == name) {
-            //     createHeadTemplate(headers);
-            //     createTemplate(newListOrders);
-            //     sortedBy = null;
-            // }
+            else {
+                //sortedBy = name
+                typeof index === 'number' ? 1: index = +index.charAt(index.length - 1);
+                index = undefined
+                console.log(index)
+                newListOrders = [...orders];
+                createHeadTemplate(headers, index);
+                createTemplate(newListOrders);
+                //console.log(newListOrders)
+                sortedBy = null;
+            }
         } else {
             if (sortedBy != name) {
+                debugger
                 sortedBy = name;
+                typeof index === 'number' ? 1: index = +index.charAt(index.length - 1);
                 createHeadTemplate(headers, index);
                 createTemplate(sortUser(newListOrders, newListUsers), index);
             }
-            // else if (sortedBy == name) {
-            //     createHeadTemplate(headers);
-            //     createTemplate(orders);
-            //     sortedBy = null;
-            // }
         }
     }
 
@@ -147,8 +162,9 @@ export default (function () {
     [...document.getElementsByTagName("select")][0].value = selectCurrency;
 
     function handlerConvert(event) {
+        debugger
         if (sortedBy == null) {
-            newListOrders = [...orders];
+            newListOrders = newListOrders;
             //debugger
             convert(newListOrders, event);
             createTemplate(newListOrders);
@@ -165,9 +181,12 @@ export default (function () {
 
     function handlerSearch() {
         let regPhrase = new RegExp(txtPhrase.value, 'i');
-        //debugger
         newListOrders = [...orders].filter((order) => {
-            return regPhrase.test(order.total) ? order : null;
+            const users = newListUsers.filter(user => user.id === order.user_id);
+            if (users && users.length > 0 && (regPhrase.test(users[0].first_name) || regPhrase.test(users[0].last_name))) {
+                return order;
+            }
+            return regPhrase.test(order.total) || regPhrase.test(order.card_type) || regPhrase.test(order.transaction_id) || regPhrase.test(order.order_country) || regPhrase.test(order.order_ip) ? order : null;
         })
         createTemplate(newListOrders);
         if (sortedBy) {
