@@ -3,7 +3,6 @@ import orders from '../data/orders.json';
 import { isActive, userInfo, dateConvert, cardConvert, orderCount, average, totalCheck, femaleAvgCheck, maleAvgCheck, mediana } from '../components/helpers.js';
 import { sortAmount, sortTransaction, sortDate, sortCardType, sortUser, sortLocation } from '../components/sorters.js';
 import users from '../data/users.json';
-//import { get } from 'https';
 
 
 
@@ -11,8 +10,28 @@ const url = `https://api.exchangeratesapi.io/latest`;
 
 let rates = {};
 let selectCurrency = 'USD';
-
+let searched = []
 let sortedBy = null;
+let param = orders;
+// switch (param) {
+//     case 'orders': return param = orders;
+//     case 'users': return param = users;
+//     case 'companies': return param = companies;
+// }
+
+
+(async () => {
+    const rawResponse = await fetch('https://httpbin.org/post?=param', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(param)
+    });
+    const content = await rawResponse.json();
+    console.log(content.json);
+})();
 
 
 
@@ -30,7 +49,7 @@ fetch(url, {
 
 const headers = ["Transaction ID", "User Info", "Order Date", "Order Amount", "Card Number", "Card Type", "Location"];
 const financeList = ["USD", "RUB", "EUR", "NZD", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "MXN", "CZK", "DKK", "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY", "KRW", "MYR", "NOK", "PHP", "PLN", "RON", "SEK", "SGD", "THB", "TRY", "ZAR"];
-let searched;
+//let searched;
 let newListOrders = [...orders];
 const newListUsers = [...users];
 
@@ -119,40 +138,35 @@ export default (function () {
         debugger
         if (name !== "header_1") {
             if (sortedBy != name) {
-                console.log(sortedBy)
                 sortedBy = name;
-                typeof index === 'number' ? 1: index = +index.charAt(index.length - 1);
+                typeof index === 'number' ? 1 : index = +index.charAt(index.length - 1);
                 createHeadTemplate(headers, index);
                 createTemplate(newListOrders.sort(sortAction(sortedBy)));
-                // if (typeof index == 'number') {
-                //     //console.log(index)
-                //     createHeadTemplate(headers, index);
-                //     createTemplate(newListOrders.sort(sortAction(sortedBy)));
-                // }
-                // else {
-                //     index = +index.charAt(index.length - 1);
-                //     createHeadTemplate(headers, index);
-                //     createTemplate(newListOrders.sort(sortAction(sortedBy)));
-                // }
             }
             else {
-                //sortedBy = name
-                typeof index === 'number' ? 1: index = +index.charAt(index.length - 1);
+                typeof index === 'number' ? 1 : index = +index.charAt(index.length - 1);
                 index = undefined
-                console.log(index)
-                newListOrders = [...orders];
                 createHeadTemplate(headers, index);
-                createTemplate(newListOrders);
-                //console.log(newListOrders)
+                createTemplate(newListOrders.sort((a,b) => {
+                    return a.id - b.id
+                }));
                 sortedBy = null;
             }
         } else {
             if (sortedBy != name) {
-                debugger
                 sortedBy = name;
-                typeof index === 'number' ? 1: index = +index.charAt(index.length - 1);
+                typeof index === 'number' ? 1 : index = +index.charAt(index.length - 1);
                 createHeadTemplate(headers, index);
                 createTemplate(sortUser(newListOrders, newListUsers), index);
+            }
+            else {
+                typeof index === 'number' ? 1 : index = +index.charAt(index.length - 1);
+                index = undefined
+                createHeadTemplate(headers, index);
+                createTemplate(newListOrders.sort((a,b) => {
+                    return a.id - b.id
+                }));
+                sortedBy = null;
             }
         }
     }
@@ -164,8 +178,8 @@ export default (function () {
     function handlerConvert(event) {
         debugger
         if (sortedBy == null) {
+            console.log("newListOrders = [...newListOrders]")
             newListOrders = newListOrders;
-            //debugger
             convert(newListOrders, event);
             createTemplate(newListOrders);
         }
@@ -282,7 +296,7 @@ function converterList(financeList) {
     });
 }
 function createHeaders(props, cellIndex) {
-    //debugger
+    debugger
     if (cellIndex !== undefined) {
         if (cellIndex === 0) {
             return props.map((item, i) => {
