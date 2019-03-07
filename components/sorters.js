@@ -7,7 +7,7 @@ export function sortAmount(a, b) {
         return -1;
 }
 
-//-------TRANSACTION SORT------//
+
 
 export function sortTransaction(a, b) {
     if (a.transaction_id > b.transaction_id)
@@ -19,7 +19,6 @@ export function sortTransaction(a, b) {
 }
 
 
-//DATE SORT//////////
 export function sortDate(a, b) {
     if (a.created_at > b.created_at)
         return 1;
@@ -50,31 +49,16 @@ export function sortUser(listOrders, listUsers) {
         })
     })
     listOrders.splice(0, listOrders.length);
-    for (let i =0; i < newOrders.length; i++) {
+    for (let i = 0; i < newOrders.length; i++) {
         listOrders.push(newOrders[i]);
     }
     return listOrders;
 }
-//orders.sort(sortLocation);
+
+export function sortDefault(a, b) {
+    return a.id - b.id;
+}
+
 export function sortLocation(a, b) {
     return (b.order_country < a.order_country) - (a.order_country < b.order_country) || (b.order_ip < a.order_ip) - (a.order_ip < b.order_ip);
-    // if (a.order_country > b.order_country) {
-    //     return 1;
-    // }
-    // if (a.order_country < b.order_country) {
-
-
-    //     return -1;
-    // }
-    // if (a.order_country === b.order_country) {
-    //     if (a.order_ip > b.order_ip) {
-    //         return 1;
-    //     }
-    //     if (a.order_ip < b.order_ip) {
-    //         return -1;
-    //     }
-    //     if (a.order_ip === b.order_ip) {
-    //         return 0;
-    //     }
-    // }
 }

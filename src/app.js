@@ -1,7 +1,7 @@
 // this is an example of improting data from JSON
 import orders from '../data/orders.json';
 import { isActive, userInfo, dateConvert, cardConvert, orderCount, average, totalCheck, femaleAvgCheck, maleAvgCheck, mediana } from '../components/helpers.js';
-import { sortAmount, sortTransaction, sortDate, sortCardType, sortUser, sortLocation } from '../components/sorters.js';
+import { sortAmount, sortTransaction, sortDate, sortCardType, sortUser, sortLocation, sortDefault } from '../components/sorters.js';
 import users from '../data/users.json';
 
 
@@ -147,9 +147,7 @@ export default (function () {
                 typeof index === 'number' ? 1 : index = +index.charAt(index.length - 1);
                 index = undefined
                 createHeadTemplate(headers, index);
-                createTemplate(newListOrders.sort((a,b) => {
-                    return a.id - b.id
-                }));
+                createTemplate(newListOrders.sort(sortDefault));
                 sortedBy = null;
             }
         } else {
@@ -163,9 +161,7 @@ export default (function () {
                 typeof index === 'number' ? 1 : index = +index.charAt(index.length - 1);
                 index = undefined
                 createHeadTemplate(headers, index);
-                createTemplate(newListOrders.sort((a,b) => {
-                    return a.id - b.id
-                }));
+                createTemplate(newListOrders.sort(sortDefault));
                 sortedBy = null;
             }
         }
