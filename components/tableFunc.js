@@ -1,5 +1,5 @@
-import users from '../data/users';
-import companies from '../data/companies';
+import { newListUsers } from '../src/app';
+import { newListCompanies } from '../src/app';
 
 
 export function average(props) {
@@ -43,7 +43,7 @@ export function mediana(props) {
 export function maleAvgCheck(props) {
     let totalMaleCheck = 0,
         maleCounter = 0;
-    users.forEach((user) => {
+    newListUsers.forEach((user) => {
         if (user.gender === "Male") {
             props.forEach((item) => {
                 if (item.user_id === user.id) {
@@ -63,7 +63,7 @@ export function maleAvgCheck(props) {
 export function femaleAvgCheck(props) {
     let totalFemaleCheck = 0,
         femaleCounter = 0;
-    users.forEach((user) => {
+    newListUsers.forEach((user) => {
         if (user.gender === "Female") {
             props.forEach((item) => {
                 if (item.user_id === user.id) {
@@ -90,19 +90,18 @@ export function isActive(props) {
     }
 }
 
-
 export function userInfo(props) {
     let gender = "";
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].id === props) {
-            if (users[i].gender === "Male") {
+    for (let i = 0; i < newListUsers.length; i++) {
+        if (newListUsers[i].id === props) {
+            if (newListUsers[i].gender === "Male") {
                 gender = "Mr";
             }
             else {
                 gender = "Ms";
             }
-            return `<a href="#">${gender}. ${users[i].first_name} ${users[i].last_name}</a>
-            ${userDetails(users[i])}`;
+            return `<a href="#">${gender}. ${newListUsers[i].first_name} ${newListUsers[i].last_name}</a>
+            ${userDetails(newListUsers[i])}`;
         }
     }
 }
@@ -128,9 +127,9 @@ function linkGen(props) {
 
 function companyIndustry(props) {
     if (props.company_id !== null) {
-        for (let i = 0; i < companies.length; i++) {
-            if (props.company_id === companies[i].id) {
-                return companies[i].industry;
+        for (let i = 0; i < newListCompanies.length; i++) {
+            if (props.company_id === newListCompanies[i].id) {
+                return newListCompanies[i].industry;
             }
         }
     }
@@ -141,9 +140,9 @@ function companyIndustry(props) {
 
 function companySector(props) {
     if (props.company_id !== null) {
-        for (let i = 0; i < companies.length; i++) {
-            if (props.company_id === companies[i].id) {
-                return companies[i].sector;
+        for (let i = 0; i < newListCompanies.length; i++) {
+            if (props.company_id === newListCompanies[i].id) {
+                return newListCompanies[i].sector;
             }
         }
     }
@@ -153,9 +152,9 @@ function companySector(props) {
 }
 function companyURL(props) {
     if (props.company_id !== null) {
-        for (let i = 0; i < companies.length; i++) {
-            if (props.company_id === companies[i].id) {
-                return companies[i].url;
+        for (let i = 0; i < newListCompanies.length; i++) {
+            if (props.company_id === newListCompanies[i].id) {
+                return newListCompanies[i].url;
             }
         }
     }
@@ -166,9 +165,9 @@ function companyURL(props) {
 
 function companyTitle(props) {
     if (props.company_id !== null) {
-        for (let i = 0; i < companies.length; i++) {
-            if (props.company_id === companies[i].id) {
-                return companies[i].title;
+        for (let i = 0; i < newListCompanies.length; i++) {
+            if (props.company_id === newListCompanies[i].id) {
+                return newListCompanies[i].title;
             }
         }
     }
@@ -176,8 +175,6 @@ function companyTitle(props) {
         return ``;
     }
 }
-
-
 
 export function dateConvert(props) {
     if (props.created_at === undefined) {
@@ -208,7 +205,6 @@ export function dateConvert(props) {
         return `${date.getDate()}/${month}/${date.getFullYear()}, ${timeConvert(date)}`;
     }
 }
-
 
 function timeConvert(props) {
     let arr = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
@@ -242,7 +238,6 @@ function timeConvert(props) {
     }
     return `${hour}:${min}:${sec} ${AMPM}`;
 }
-
 
 export function cardConvert(props) {
     let str = "";

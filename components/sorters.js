@@ -7,8 +7,6 @@ export function sortAmount(a, b) {
         return -1;
 }
 
-
-
 export function sortTransaction(a, b) {
     if (a.transaction_id > b.transaction_id)
         return 1;
@@ -17,7 +15,6 @@ export function sortTransaction(a, b) {
     if (a.transaction_id < b.transaction_id)
         return -1;
 }
-
 
 export function sortDate(a, b) {
     if (a.created_at > b.created_at)
@@ -36,6 +33,7 @@ export function sortCardType(a, b) {
     if (a.card_type === b.card_type)
         return 0;
 }
+
 export function sortUser(listOrders, listUsers) {
     listUsers.sort((a, b) => {
         return (b.first_name < a.first_name) - (a.first_name < b.first_name) || (b.last_name < a.last_name) - (a.last_name < b.last_name);
