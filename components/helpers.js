@@ -1,7 +1,6 @@
 import { newListUsers } from '../src/app';
 import { newListCompanies } from '../src/app';
 
-
 export function average(props) {
     return (totalCheck(props) / props.length).toFixed(2);
 

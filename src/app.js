@@ -1,23 +1,23 @@
 // this is an example of improting data from JSON
-import orders from '../data/orders.json';
+import orders from '../data/orders';
 import companies from '../data/companies';
-import users from '../data/users.json';
-import { isActive, userInfo, dateConvert, cardConvert, orderCount, average, totalCheck, femaleAvgCheck, maleAvgCheck, mediana } from '../components/tableFunc.js';
-import { sortAmount, sortTransaction, sortDate, sortCardType, sortUser, sortLocation, sortDefault } from '../components/sorters.js';
+import users from '../data/users';
+import { isActive, userInfo, dateConvert, cardConvert, orderCount, average, totalCheck, femaleAvgCheck, maleAvgCheck, mediana } from '../components/helpers';
+import { sortAmount, sortTransaction, sortDate, sortCardType, sortUser, sortLocation, sortDefault } from '../components/sorters';
+import { options, GET, EUR, USD, RUB, headers, financeList, URL, USD_VALUE, RUB_VALUE, EUR_VALUE } from './constants';
 
-
-
-const url = `https://api.exchangeratesapi.io/latest`;
 let rates = {};
-let selectCurrency = 'USD';
+let selectCurrency = USD;
 let sortedBy = null;
+let newListOrders = [...orders];
+export const newListUsers = [...users];
+export const newListCompanies = [...companies];
 
-
-fetch(url, {
-    type: 'GET'
+fetch(URL, {
+    type: GET
 })
     .then((response) => {
-        response.json(url).then((data) => {
+        response.json(URL).then((data) => {
             rates = data.rates;
         });
     })
@@ -25,30 +25,17 @@ fetch(url, {
         console.log("Error on load rates: " + error)
     });
 
-fetch('/api/orders', {
-    url: "/api/users",
-    type: "GET",
-    contentType: "application/json"
-})
+fetch('/api/orders', options)
     .then(response => response.json())
     .then((orders) => { console.log(orders) });
 
-fetch('/api/users')
+fetch('/api/users', options)
     .then(response => response.json())
     .then((users) => { console.log(users) });
 
-fetch('/api/companies')
+fetch('/api/companies', options)
     .then(response => response.json())
     .then((companies) => { console.log(companies) });
-
-
-const headers = ["Transaction ID", "User Info", "Order Date", "Order Amount", "Card Number", "Card Type", "Location"];
-const financeList = ["USD", "RUB", "EUR", "NZD", "AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "MXN", "CZK", "DKK", "GBP", "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "ISK", "JPY", "KRW", "MYR", "NOK", "PHP", "PLN", "RON", "SEK", "SGD", "THB", "TRY", "ZAR"];
-
-
-let newListOrders = [...orders];
-export const newListUsers = [...users];
-export const newListCompanies = [...companies];
 
 export default (function () {
     createSelectTemplate(financeList);
@@ -63,7 +50,7 @@ function createSelectTemplate(finList) {
         <tr>
             <th>Search:</th>
             <th colspan="4">
-                <input type="text" class="form-control" id="search" placeholder="Enter user info, date, location, card type, order amount or transaction id" title="Enter user info, date, location, card type, order amount or transaction id">
+                <input type="text" class="form-control" id="search" placeholder="Enter user info, location, card type, order amount or transaction id" title="Enter user info, location, card type, order amount or transaction id">
             </th>
             <th>Convert Money: </th>
             <th>
@@ -91,6 +78,36 @@ function createHeadTemplate(tableHeaders, index) {
     listeners();
 }
 
+function createHeaders(props, cellIndex) {
+    if (cellIndex !== undefined) {
+        if (cellIndex !== 4) {
+            return props.map((item, i) => {
+                if (item !== props[4] && i === cellIndex) {
+                    return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
+                }
+                else {
+                    if (item !== props[4]) {
+                        return (`<th style="cursor:pointer" id="header_${i}">${item}</th>`);
+                    }
+                    else {
+                        return (`<th id="header_${i}">${item}</th>`);
+                    }
+                }
+            }).join('');
+        }
+    }
+    return props.map((item, i) => {
+        if (item !== props[4]) {
+            return (`<th style="cursor:pointer" id="header_${i}">${item}</th>`);
+        }
+        else {
+            return (
+                `<th id="header_${i}">${item}</th>`
+            );
+        }
+    }).join('');
+}
+
 function createTemplate(propsOrders) {
     [...document.getElementsByClassName("user_data")].forEach((item) => {
         item.children[0].addEventListener("click", handlerUserDetails);
@@ -103,6 +120,27 @@ function createTemplate(propsOrders) {
     newTbody.innerHTML = table(propsOrders) + statistics(propsOrders);
     document.getElementsByTagName("table")[0].appendChild(newTbody);
     listenerUserInfo();
+}
+
+function table(props) {
+    if (props.length > 0) {
+        return props.map((item) => (
+            `<tr id=order_${item.id}>
+            <td>${item.transaction_id}</td>
+            <td class=user_data>${userInfo(item.user_id)}</td>
+            <td>${dateConvert(item)}</td> 
+            <td>${moneyConvert(item)}</td>
+            <td>${cardConvert(item.card_number)}</td>
+            <td>${item.card_type}</td>
+            <td>${item.order_country} (${item.order_ip})<td>
+        </tr>`
+        )).join('');
+    }
+    else {
+        return (`<tr>
+            <td colspan="7" class="text-center">Nothing found</td>
+        </tr>`);
+    }
 }
 
 function listeners() {
@@ -208,24 +246,18 @@ function handlerUserDetails(event) {
     isActive(event.currentTarget.nextElementSibling);
 }
 
-function table(props) {
-    if (props.length > 0) {
-        return props.map((item) => (
-            `<tr id=order_${item.id}>
-            <td>${item.transaction_id}</td>
-            <td class=user_data>${userInfo(item.user_id)}</td>
-            <td>${dateConvert(item)}</td> 
-            <td>${moneyConvert(item)}</td>
-            <td>${cardConvert(item.card_number)}</td>
-            <td>${item.card_type}</td>
-            <td>${item.order_country} (${item.order_ip})<td>
-        </tr>`
-        )).join('');
+function moneySymbol() {
+    if (selectCurrency === USD) {
+        return (`${USD_VALUE} `);
+    }
+    if (selectCurrency === EUR) {
+        return (`${EUR_VALUE} `);
+    }
+    if (selectCurrency === RUB) {
+        return (`${RUB_VALUE} `);
     }
     else {
-        return (`<tr>
-            <td colspan="7" class="text-center">Nothing found</td>
-        </tr>`);
+        return (`${selectCurrency} `);
     }
 }
 
@@ -233,29 +265,14 @@ function moneyConvert(props) {
     return (`${moneySymbol()} ${props.total}`);
 }
 
-function moneySymbol() {
-    if (selectCurrency === 'USD') {
-        return (`$ `);
-    }
-    if (selectCurrency === 'EUR') {
-        return (`€ `);
-    }
-    if (selectCurrency === 'RUB') {
-        return (`₽ `);
-    }
-    else {
-        return (`${selectCurrency} `);
-    }
-}
-
 function convert(props, event) {
-    if (selectCurrency !== 'EUR') {
+    if (selectCurrency !== EUR) {
         props.map((order) => {
             order.total = (order.total / rates[selectCurrency]).toFixed(2);
         });
     }
     selectCurrency = event.currentTarget.value;
-    if (selectCurrency !== 'EUR') {
+    if (selectCurrency !== EUR) {
         props.map((order) => {
             order.total = (order.total * rates[selectCurrency]).toFixed(2);
         });
@@ -268,42 +285,13 @@ function convert(props, event) {
 
 function converterList(financeList) {
     return financeList.map((item) => {
-        if (item === "USD" || item === "EUR" || item === "RUB") {
+        if (item === USD || item === EUR || item === RUB) {
             return (`<option style="font-weight: bold" value="${item}">${item}</option>`);
         }
         else {
             return (`<option value="${item}">${item}</option>`);
         }
     });
-}
-function createHeaders(props, cellIndex) {
-    if (cellIndex !== undefined) {
-        if (cellIndex !== 4) {
-            return props.map((item, i) => {
-                if (item !== props[4] && i === cellIndex) {
-                    return (`<th style="cursor:pointer" id="header_${i}">${item} <span>&#8595;</span></th>`);
-                }
-                else {
-                    if (item !== props[4]) {
-                        return (`<th style="cursor:pointer" id="header_${i}">${item}</th>`);
-                    }
-                    else {
-                        return (`<th id="header_${i}">${item}</th>`);
-                    }
-                }
-            }).join('');
-        }
-    }
-    return props.map((item, i) => {
-        if (item !== props[4]) {
-            return (`<th style="cursor:pointer" id="header_${i}">${item}</th>`);
-        }
-        else {
-            return (
-                `<th id="header_${i}">${item}</th>`
-            );
-        }
-    }).join('');
 }
 
 function statistics(propsOrders) {
