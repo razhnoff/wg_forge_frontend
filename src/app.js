@@ -24,7 +24,7 @@ fetch(URL, {
     .catch((error) => {
         console.log("Error on load rates: " + error)
     });
-
+// This API will work after release of the project
 fetch('/api/orders', options)
     .then(response => response.json())
     .then((orders) => { console.log(orders) });
