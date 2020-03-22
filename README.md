@@ -1,3 +1,7 @@
+# Результат
+
+[View work](https://razhnoff.github.io/wg_forge_frontend/ "finance app")
+
 # Тестовое задание WG Forge Platform Front-End
 
 Это стартовый проект для выполнения тестового задания программы WG Forge Platform Front-End, на основе которого вам нужно выполнять задание.
